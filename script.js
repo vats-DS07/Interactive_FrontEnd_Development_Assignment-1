@@ -1,119 +1,120 @@
-const form = document.getElementById("eventForm");
-const container = document.getElementById("eventContainer");
+const eventForm = document.getElementById("eventForm");
+const eventTitle = document.getElementById("eventTitle");
+const eventDate = document.getElementById("eventDate");
+const eventCategory = document.getElementById("eventCategory");
+const eventDescription = document.getElementById("eventDescription");
+
 const clearAllBtn = document.getElementById("clearAllBtn");
 const addSampleBtn = document.getElementById("addSampleBtn");
-const demoContent = document.getElementById("demoContent");
+const eventContainer = document.getElementById("eventContainer");
 
-const titleInput = document.getElementById("eventTitle");
-const dateInput = document.getElementById("eventDate");
-const categoryInput = document.getElementById("eventCategory");
-const descInput = document.getElementById("eventDescription");
 
-function showToast(message) {
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerText = message;
-    document.body.appendChild(toast);
+let sampleEvent =
+    [
+        {
+            title: "Tech Prac",
+            date: "04-12-2026",
+            category: "workshop",
+            description: "Hey Welcome to Event!"
+        },
+        {
+            title: "Beauty Workshop",
+            date: "04-12-2026",
+            category: "conference",
+            description: "Hey welcome to Event!"
+        }
+    ]
 
-    setTimeout(() => toast.classList.add("show"), 50);
+addSampleBtn.addEventListener("click", () => {
+    sampleEvent.forEach(addEvent);
+})
 
-    setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 400);
-    }, 2000);
-}
 
-function updateEmptyState() {
-    if (container.children.length === 0) {
-        container.innerHTML = `<div class="empty-state">No events yet. Add your first event!</div>`;
-    }
-}
-
-function createEventCard(title, date, category, description) {
+//   create event card  
+function createEventCard(eventData) {
     const card = document.createElement("div");
     card.className = "event-card";
-
     card.innerHTML = `
-        <h3>${title}</h3>
-        <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Category:</strong> ${category}</p>
-        <p>${description}</p>
-        <button class="delete-btn">Delete</button>
-    `;
-
-    card.querySelector(".delete-btn").addEventListener("click", () => {
-        card.remove();
-        updateEmptyState();
-        showToast("Event deleted");
-    });
-
+    <button class=delete-btn>Delete</button>
+    <h3>${eventData.title}</h3>
+    <div>${eventData.date}</div>
+    <span>${eventData.category}</span>
+    <p>${eventData.description}</p>
+    `
     return card;
+
 }
 
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
+function addEvent(eventData) {
     const emptyState = document.querySelector(".empty-state");
     if (emptyState) emptyState.remove();
 
-    const title = titleInput.value;
-    const date = dateInput.value;
-    const category = categoryInput.value;
-    const description = descInput.value;
+    eventContainer.appendChild(createEventCard(eventData));
 
-    const card = createEventCard(title, date, category, description);
-    container.appendChild(card);
+}
 
-    form.reset();
-    showToast("Event added successfully 🎉");
-});
+eventForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const eventData = {
+        title: eventTitle.value,
+        date: eventDate.value,
+        category: eventCategory.value,
+        description: eventDescription.value
+    }
 
+    addEvent(eventData);
+    eventForm.reset();
+
+})
+
+// clear all event
 clearAllBtn.addEventListener("click", () => {
-    container.innerHTML = "";
-    updateEmptyState();
-    showToast("All events cleared");
-});
+    eventContainer.innerHTML = `<div class="empty-state">No events yet. Add your first event!</div>`
+})
 
-addSampleBtn.addEventListener("click", () => {
-    container.innerHTML = "";
 
-    const samples = [
-        ["Tech Conference", "2026-03-12", "Conference", "Annual technology summit"],
-        ["UI/UX Workshop", "2026-02-20", "Workshop", "Hands-on design session"],
-        ["Startup Meetup", "2026-04-05", "Meetup", "Networking with founders"]
-    ];
 
-    samples.forEach(event => {
-        const card = createEventCard(...event);
-        container.appendChild(card);
-    });
+eventContainer.addEventListener("click", (event) => {
+    // console use to target the closest evnt card child element of the targetes element
+    const card = event.target.closest(".event-card");
+    console.log(card);//
 
-    showToast("Sample events added ✨");
-});
+    if (event.target.classList.contains("delete-btn")) {
+        card.remove()
+    }
+
+    if (!eventContainer.querySelector(".event-card")) {
+        eventContainer.innerHTML = `
+    <div class="empty-state">No events yet. Add your first event!</div>`
+    }
+
+
+
+})
+
+const demoContent = document.getElementById("demoContent");
 
 document.addEventListener("keydown", (e) => {
-    demoContent.innerHTML = `
-        <h3>Key Pressed:</h3>
-        <p><strong>${e.key}</strong></p>
-    `;
+    demoContent.textContent = `You pressed: ${e.key}`;
 });
 
 function createBubble() {
     const bubble = document.createElement("div");
-    bubble.className = "bubble";
+    bubble.classList.add("bubble");
 
     const size = Math.random() * 60 + 20;
-
-    bubble.style.width = `${size}px`;
-    bubble.style.height = `${size}px`;
-    bubble.style.left = `${Math.random() * 100}%`;
-    bubble.style.animationDuration = `${Math.random() * 10 + 5}s`;
+    bubble.style.width = size + "px";
+    bubble.style.height = size + "px";
+    bubble.style.left = Math.random() * window.innerWidth + "px";
+    bubble.style.animationDuration = Math.random() * 5 + 5 + "s";
 
     document.body.appendChild(bubble);
 
-    setTimeout(() => bubble.remove(), 15000);
+    setTimeout(() => {
+        bubble.remove();
+    }, 10000);
 }
 
-setInterval(createBubble, 800);
+setInterval(createBubble, 500);
 
  
